@@ -1,0 +1,6 @@
+This repository contains a Qt Mobility plugin for the QtFeedback module.
+The plugin provides haptic feedback effects via ff-memless ioctl.
+
+The code for this plugin is open source software.
+
+The current maintainer is: Chris Adams (chris.adams@jollamobile.com)
