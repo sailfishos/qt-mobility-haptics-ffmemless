@@ -1,9 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2012 Jolla Ltd. (chris.adams@jollamobile.com)
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the Qt Mobility Components.
+** Copyright (C) 2012 Jolla Ltd.
+** Contact: Chris Adams <chris.adams@jollamobile.com>
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
@@ -50,7 +48,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifndef USING_QTFEEDBACK
 Q_EXPORT_PLUGIN2(feedback_ffmemless, QFeedbackFFMemless)
+#endif
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define OFF(x)  ((x)%BITS_PER_LONG)

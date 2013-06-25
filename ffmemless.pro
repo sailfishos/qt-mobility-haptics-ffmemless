@@ -1,6 +1,6 @@
 TEMPLATE = lib
 CONFIG += qt plugin hide_symbols
-QT = core
+QT += core
 TARGET = $$qtLibraryTarget(qtfeedback_ffmemless)
 PLUGIN_TYPE=feedback
 
@@ -15,9 +15,17 @@ settings.path = $$[QT_INSTALL_PLUGINS]/feedback/
 target.path = $$[QT_INSTALL_PLUGINS]/feedback
 INSTALLS += target settings
 
-INCLUDEPATH += . $$[MOBILITY_INCLUDE]
-DEPENDPATH += . $$[MOBILITY_INCLUDE]
-
-CONFIG += mobility
-MOBILITY = feedback
-
+equals(QT_MAJOR_VERSION, 4) {
+    INCLUDEPATH += . $$[MOBILITY_INCLUDE]
+    DEPENDPATH += . $$[MOBILITY_INCLUDE]
+    CONFIG += mobility
+    MOBILITY = feedback
+}
+equals(QT_MAJOR_VERSION, 5) {
+    DEFINES *= USING_QTFEEDBACK
+    OTHER_FILES += ffmemless.json
+    QT += feedback
+    plugindescription.files = ffmemless.json
+    plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
+    INSTALLS += plugindescription
+}
