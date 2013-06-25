@@ -1,5 +1,5 @@
 Name: qt5-feedback-haptics-ffmemless
-Version: 0.0.8
+Version: 0.1.8
 Release: 1
 Summary: Plugin which provides haptic feedback via ffmemless ioctl
 Group: System/Plugins
@@ -10,8 +10,8 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt0Feedback)
-Provides: qt-mobility-haptics-ffmemless > 0.0.7
-Obsoletes: qt-mobility-haptics-ffmemless <= 0.0.7
+Provides: qt-mobility-haptics-ffmemless > 0.1.7
+Obsoletes: qt-mobility-haptics-ffmemless <= 0.1.7
 
 %description
 %{summary}.

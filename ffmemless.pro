@@ -1,6 +1,6 @@
 TEMPLATE = lib
 CONFIG += qt plugin hide_symbols
-QT += core
+QT = core
 TARGET = $$qtLibraryTarget(qtfeedback_ffmemless)
 PLUGIN_TYPE=feedback
 
