@@ -1,9 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2012 Jolla Ltd. (chris.adams@jollamobile.com)
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the Qt Mobility Components.
+** Copyright (C) 2012 Jolla Ltd.
+** Contact: Chris Adams <chris.adams@jollamobile.com>
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
@@ -38,23 +36,44 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
+
 #ifndef QFEEDBACK_FFMEMLESS_H
 #define QFEEDBACK_FFMEMLESS_H
 
+#ifdef USING_QTFEEDBACK
+#include <QtPlugin>
+#else
 #include <qmobilityglobal.h>
+#endif
+
 #include <qfeedbackplugininterfaces.h>
 #include <linux/input.h>
 #include <QElapsedTimer>
 #include <QTimer>
 
 QT_BEGIN_HEADER
+
+#ifdef USING_QTFEEDBACK
+QT_USE_NAMESPACE
+#define ThemeEffect Effect
+#define ThemeBasicKeypad PressWeak
+#define ThemeBasicButton Press
+#define ThemeLongPress PressStrong
+#else
 QTM_USE_NAMESPACE
+#endif
 
 class QFeedbackFFMemless : public QObject, public QFeedbackHapticsInterface, public QFeedbackThemeInterface
 {
     Q_OBJECT
+#ifdef USING_QTFEEDBACK
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtFeedbackPlugin" FILE "ffmemless.json")
+    Q_INTERFACES(QFeedbackHapticsInterface)
+    Q_INTERFACES(QFeedbackThemeInterface)
+#else
     Q_INTERFACES(QTM_NAMESPACE::QFeedbackHapticsInterface)
     Q_INTERFACES(QTM_NAMESPACE::QFeedbackThemeInterface)
+#endif
 public:
     QFeedbackFFMemless(QObject *parent = 0);
     ~QFeedbackFFMemless();
