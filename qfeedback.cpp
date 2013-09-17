@@ -107,6 +107,7 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
     m_periodicEffectIsActive(false),
     m_themeEffectsPossible(false),
     m_customEffectsPossible(false),
+    m_periodicThemeEffectsPossible(false),
     m_initialising(false),
     ACTUATOR_SPIN_UP(0),
     ACTUATOR_SPIN_DOWN(0),
@@ -125,7 +126,12 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
     KEYPAD_PRESS_DURATION(0),
     KEYPAD_PRESS_DELAY(0),
     KEYPAD_PRESS_MAX(0),
-    KEYPAD_PRESS_MIN(0)
+    KEYPAD_PRESS_MIN(0),
+    KEYPAD_USE_PERIODIC(0),
+    KEYPAD_PERIODIC_ATTACK_TIME(0),
+    KEYPAD_PERIODIC_FADE_TIME(0),
+    KEYPAD_PERIODIC_ATTACK_LEVEL(0),
+    KEYPAD_PERIODIC_FADE_LEVEL(0)
 {
     initialiseConstants();
     if (initialiseEffects()) {
@@ -202,6 +208,11 @@ KEYPAD_PRESS_DURATION   = settings.value("KEYPAD_PRESS_DURATION", (ACTUATOR_SPIN
 KEYPAD_PRESS_DELAY      = settings.value("KEYPAD_PRESS_DELAY", (ACTUATOR_SPIN_DOWN + 0U)).value<quint16>();
 KEYPAD_PRESS_MAX        = settings.value("KEYPAD_PRESS_MAX", (ACTUATOR_RUMBLE_MAX - 0U)).value<quint16>();
 KEYPAD_PRESS_MIN        = settings.value("KEYPAD_PRESS_MIN", (ACTUATOR_RUMBLE_MAX)).value<quint16>();
+KEYPAD_USE_PERIODIC          = settings.value("KEYPAD_USE_PERIODIC", 0).value<quint16>();
+KEYPAD_PERIODIC_ATTACK_LEVEL = settings.value("KEYPAD_PERIODIC_ATTACK_LEVEL", ACTUATOR_MAGNITUDE_MAX).value<quint16>();
+KEYPAD_PERIODIC_FADE_LEVEL   = settings.value("KEYPAD_PERIODIC_FADE_LEVEL", 0).value<quint16>();
+KEYPAD_PERIODIC_ATTACK_TIME  = settings.value("KEYPAD_PERIODIC_ATTACK_TIME", ACTUATOR_SPIN_UP).value<quint16>();
+KEYPAD_PERIODIC_FADE_TIME    = settings.value("KEYPAD_PERIODIC_FADE_TIME", ACTUATOR_SPIN_DOWN).value<quint16>();
 // read override constants from override settings file if specified in environment
 QByteArray override = qgetenv("FF_MEMLESS_SETTINGS");
 if (override.count() && QFile::exists(override)) {
@@ -224,6 +235,11 @@ if (override.count() && QFile::exists(override)) {
     KEYPAD_PRESS_DELAY      = overrideSettings.value("KEYPAD_PRESS_DELAY", KEYPAD_PRESS_DELAY).value<quint16>();
     KEYPAD_PRESS_MAX        = overrideSettings.value("KEYPAD_PRESS_MAX", KEYPAD_PRESS_MAX).value<quint16>();
     KEYPAD_PRESS_MIN        = overrideSettings.value("KEYPAD_PRESS_MIN", KEYPAD_PRESS_MIN).value<quint16>();
+    KEYPAD_USE_PERIODIC          = overrideSettings.value("KEYPAD_USE_PERIODIC", KEYPAD_USE_PERIODIC).value<quint16>();
+    KEYPAD_PERIODIC_ATTACK_LEVEL = overrideSettings.value("KEYPAD_PERIODIC_ATTACK_LEVEL", KEYPAD_PERIODIC_ATTACK_LEVEL).value<quint16>();
+    KEYPAD_PERIODIC_FADE_LEVEL   = overrideSettings.value("KEYPAD_PERIODIC_FADE_LEVEL", KEYPAD_PERIODIC_FADE_LEVEL).value<quint16>();
+    KEYPAD_PERIODIC_ATTACK_TIME  = overrideSettings.value("KEYPAD_PERIODIC_ATTACK_TIME", KEYPAD_PERIODIC_ATTACK_TIME).value<quint16>();
+    KEYPAD_PERIODIC_FADE_TIME    = overrideSettings.value("KEYPAD_PERIODIC_FADE_TIME", KEYPAD_PERIODIC_FADE_TIME).value<quint16>();
 }
 #else
 LONG_PRESS_DURATION     = (ACTUATOR_SPIN_UP   + 75U);
@@ -238,6 +254,11 @@ KEYPAD_PRESS_DURATION   = (ACTUATOR_SPIN_UP   + 5U);
 KEYPAD_PRESS_DELAY      = (ACTUATOR_SPIN_DOWN + 0U);
 KEYPAD_PRESS_MAX        = (ACTUATOR_RUMBLE_MAX  - 0U);
 KEYPAD_PRESS_MIN        = (ACTUATOR_RUMBLE_MAX);
+KEYPAD_USE_PERIODIC          = 0U;
+KEYPAD_PERIODIC_ATTACK_LEVEL = (ACTUATOR_RUMBLE_MAX  - 0U);
+KEYPAD_PERIODIC_FADE_LEVEL   = 0U;
+KEYPAD_PERIODIC_ATTACK_TIME  = 1U;
+KEYPAD_PERIODIC_FADE_TIME    = 1U;
 #endif // FF_MEMLESS_SETTINGS
 }
 
@@ -311,6 +332,26 @@ bool QFeedbackFFMemless::initialiseEffects()
             m_customEffectsPossible = m_supportsPeriodic;
             m_actuatorEnabled = m_supportsPeriodic;
         }
+
+        if (KEYPAD_USE_PERIODIC && m_supportsPeriodic) {
+            // if we support periodic custom haptic effects, we can use a
+            // periodic effect for the keypress theme effect.  This just
+            // allows a nicer, clickier effect.
+            m_periodicThemeEffect.type = FF_PERIODIC;
+            m_periodicThemeEffect.id = -1;
+            m_periodicThemeEffect.u.periodic.waveform = FF_SINE;
+            m_periodicThemeEffect.u.periodic.period = KEYPAD_PRESS_DURATION;
+            m_periodicThemeEffect.u.periodic.magnitude = KEYPAD_PRESS_MAX / 2; // KPM is 16bU, MAG is 16bS
+            m_periodicThemeEffect.u.periodic.offset = KEYPAD_PRESS_MIN / 2;    // KPM is 16bU, OFF is 16bS
+            m_periodicThemeEffect.u.periodic.phase = 0x0U;
+            m_periodicThemeEffect.u.periodic.envelope.attack_length = KEYPAD_PERIODIC_ATTACK_TIME;
+            m_periodicThemeEffect.u.periodic.envelope.attack_level = KEYPAD_PERIODIC_ATTACK_LEVEL;
+            m_periodicThemeEffect.u.periodic.envelope.fade_length = KEYPAD_PERIODIC_FADE_TIME;
+            m_periodicThemeEffect.u.periodic.envelope.fade_level = KEYPAD_PERIODIC_FADE_LEVEL;
+            m_periodicThemeEffect.replay.length = ACTUATOR_SPIN_UP + KEYPAD_PRESS_DURATION;
+            m_periodicThemeEffect.replay.delay = ACTUATOR_SPIN_DOWN + KEYPAD_PRESS_DELAY;
+            m_periodicThemeEffectsPossible = uploadEffect(&m_periodicThemeEffect);
+        }
     }
 
     // if we can't provide any effects, close the device.
@@ -379,6 +420,12 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
 {
     if (!m_themeEffectsPossible)
         return false;
+
+    // use Q_LIKELY to optimise for VKB key presses
+    if (Q_LIKELY(effect == QFeedbackEffect::ThemeBasicKeypad && m_periodicThemeEffectsPossible)) {
+        m_themeEffectPlayEvent.code = m_periodicThemeEffect.id;
+        return writeEffectEvent(&m_themeEffectPlayEvent);
+    }
 
     switch (effect) {
         case QFeedbackEffect::ThemeLongPress:
