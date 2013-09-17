@@ -100,6 +100,10 @@ int vibra_evdev_file_search(bool *supportsRumble, bool *supportsPeriodic)
 
 
 QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
+#ifdef USING_QTFEEDBACK
+    m_profile(0),
+    m_profileEnablesVibra(false),
+#endif
     m_stateChangeTimer(0),
     m_actuator(0),
     m_vibraSpiDevice(-1),
@@ -134,8 +138,24 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
         connect(m_stateChangeTimer, SIGNAL(timeout()), this, SLOT(stateChangeTimerTriggered()));
         m_actuator = createFeedbackActuator(this, 1);
         m_actuators.append(m_actuator);
+
+#ifdef USING_QTFEEDBACK
+        m_profile = new Profile(this);
+        connect(m_profile, SIGNAL(activeProfileChanged(QString)),
+                this, SLOT(deviceProfileSettingsChanged()));
+        connect(m_profile, SIGNAL(vibrationChanged(QString, bool)),
+                this, SLOT(deviceProfileSettingsChanged()));
+        deviceProfileSettingsChanged();
+#endif
     }
 }
+
+#ifdef USING_QTFEEDBACK
+void QFeedbackFFMemless::deviceProfileSettingsChanged()
+{
+    m_profileEnablesVibra = m_profile->isVibrationEnabled(m_profile->activeProfile());
+}
+#endif
 
 QFeedbackFFMemless::~QFeedbackFFMemless()
 {
@@ -377,8 +397,13 @@ QFeedbackInterface::PluginPriority QFeedbackFFMemless::pluginPriority()
 
 bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
 {
+#ifdef USING_QTFEEDBACK // use Q_UNLIKELY for performance
+    if (Q_UNLIKELY(!m_themeEffectsPossible || !m_profileEnablesVibra))
+        return false;
+#else
     if (!m_themeEffectsPossible)
         return false;
+#endif
 
     switch (effect) {
         case QFeedbackEffect::ThemeLongPress:
@@ -546,6 +571,12 @@ void QFeedbackFFMemless::restartCustomEffect(QFeedbackHapticsEffect *effect)
 {
     // write stop.
     stopCustomEffect(effect);
+
+#ifdef USING_QTFEEDBACK
+    // check to see if we should play.
+    if (Q_UNLIKELY(!m_profileEnablesVibra))
+        return;
+#endif
 
     // reupload the (possibly updated) effect.
     int whichEffect = reuploadUpdatedEffect(effect);

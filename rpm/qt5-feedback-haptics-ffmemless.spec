@@ -10,6 +10,7 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt0Feedback)
+BuildRequires:  libprofile-qt5-devel
 Provides: qt-mobility-haptics-ffmemless > 0.1.7
 Obsoletes: qt-mobility-haptics-ffmemless <= 0.1.7
 
