@@ -41,6 +41,7 @@
 #define QFEEDBACK_FFMEMLESS_H
 
 #ifdef USING_QTFEEDBACK
+#include <profile.h>
 #include <QtPlugin>
 #else
 #include <qmobilityglobal.h>
@@ -95,6 +96,9 @@ public:
 
 private Q_SLOTS:
     void stateChangeTimerTriggered();
+#ifdef USING_QTFEEDBACK
+    void deviceProfileSettingsChanged();
+#endif
 
 private:
     void stopCustomEffect(QFeedbackHapticsEffect *effect);
@@ -106,6 +110,11 @@ private:
     bool writeEffectEvent(struct input_event *event);
 
 private:
+#ifdef USING_QTFEEDBACK
+    // profile change detection (normal / silent / airplane etc)
+    Profile *m_profile;
+    bool m_profileEnablesVibra;
+#endif
     // theme effects
     struct input_event m_themeEffectPlayEvent;
     struct ff_effect m_themeEffect;
