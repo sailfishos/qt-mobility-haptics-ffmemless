@@ -103,6 +103,7 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
 #ifdef USING_QTFEEDBACK
     m_profile(0),
     m_profileEnablesVibra(false),
+    m_profileTouchscreenVibraLevel(0),
 #endif
     m_stateChangeTimer(0),
     m_actuator(0),
@@ -145,6 +146,8 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
                 this, SLOT(deviceProfileSettingsChanged()));
         connect(m_profile, SIGNAL(vibrationChanged(QString, bool)),
                 this, SLOT(deviceProfileSettingsChanged()));
+        connect(m_profile, SIGNAL(touchscreenVibrationLevelChanged(QString, int)),
+                this, SLOT(deviceProfileSettingsChanged()));
         deviceProfileSettingsChanged();
 #endif
     }
@@ -154,6 +157,7 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
 void QFeedbackFFMemless::deviceProfileSettingsChanged()
 {
     m_profileEnablesVibra = m_profile->isVibrationEnabled(m_profile->activeProfile());
+    m_profileTouchscreenVibraLevel = m_profile->touchscreenVibrationLevel(m_profile->activeProfile());
 }
 #endif
 
@@ -416,6 +420,10 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
         break;
         case QFeedbackEffect::ThemeBasicKeypad:
         {
+#ifdef USING_QTFEEDBACK
+            if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0))
+                return false;
+#endif
             m_themeEffect.u.rumble.strong_magnitude = KEYPAD_PRESS_MAX;
             m_themeEffect.u.rumble.weak_magnitude = KEYPAD_PRESS_MIN;
             m_themeEffect.replay.length = KEYPAD_PRESS_DURATION;
@@ -423,6 +431,12 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
         }
         break;
         case QFeedbackEffect::ThemeBasicButton: // BasicButton is the default.
+#ifdef USING_QTFEEDBACK
+        {
+            if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0))
+                return false;
+        }
+#endif
         default:
         {
             m_themeEffect.u.rumble.strong_magnitude = BUTTON_PRESS_MAX;
