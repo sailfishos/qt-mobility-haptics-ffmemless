@@ -8,6 +8,7 @@ URL: https://github.com/nemomobile/qt-mobility-haptics-ffmemless
 Source0: %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+Requires:	libprofile-qt5 >= 0.34.0.8
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt0Feedback)
