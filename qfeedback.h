@@ -114,6 +114,7 @@ private:
     // profile change detection (normal / silent / airplane etc)
     Profile *m_profile;
     bool m_profileEnablesVibra;
+    int m_profileTouchscreenVibraLevel;
 #endif
     // theme effects
     struct input_event m_themeEffectPlayEvent;
