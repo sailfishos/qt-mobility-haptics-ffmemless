@@ -1,5 +1,5 @@
 Name: qt5-feedback-haptics-ffmemless
-Version: 0.1.9
+Version: 0.2.1
 Release: 1
 Summary: Plugin which provides haptic feedback via ffmemless ioctl
 Group: System/Plugins
