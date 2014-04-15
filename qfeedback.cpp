@@ -579,6 +579,9 @@ void QFeedbackFFMemless::stopCustomEffect(QFeedbackHapticsEffect *effect)
     stopEvent.value = 0;
     writeEffectEvent(&stopEvent);
     m_periodicEffectIsActive = false;
+
+    // emit stateChanged on the effect
+    QMetaObject::invokeMethod(effect, "stateChanged");
 }
 
 void QFeedbackFFMemless::restartCustomEffect(QFeedbackHapticsEffect *effect)
