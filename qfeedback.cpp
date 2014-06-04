@@ -132,6 +132,9 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
     KEYPAD_PRESS_MAX(0),
     KEYPAD_PRESS_MIN(0)
 {
+    memset(&m_themeEffect, 0, sizeof(m_customHapticEffect));
+    memset(&m_customHapticEffect, 0, sizeof(m_customHapticEffect));
+    memset(&m_periodicHapticEffect, 0, sizeof(m_periodicHapticEffect));
     initialiseConstants();
     if (initialiseEffects()) {
         m_stateChangeTimer = new QTimer(this);
