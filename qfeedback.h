@@ -126,7 +126,6 @@ private:
     QList<QFeedbackActuator*> m_actuators;
     QElapsedTimer m_elapsedTimer;
     QTimer *m_stateChangeTimer;
-    QFeedbackActuator *m_actuator;
     QFeedbackHapticsEffect *m_activeEffect;
     int m_vibraSpiDevice;
     bool m_actuatorEnabled;
