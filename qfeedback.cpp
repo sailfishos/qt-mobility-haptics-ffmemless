@@ -106,7 +106,6 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
     m_profileTouchscreenVibraLevel(0),
 #endif
     m_stateChangeTimer(0),
-    m_actuator(0),
     m_vibraSpiDevice(-1),
     m_actuatorEnabled(false),
     m_periodicEffectIsActive(false),
@@ -140,8 +139,8 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
         m_stateChangeTimer = new QTimer(this);
         m_stateChangeTimer->setSingleShot(true);
         connect(m_stateChangeTimer, SIGNAL(timeout()), this, SLOT(stateChangeTimerTriggered()));
-        m_actuator = createFeedbackActuator(this, 1);
-        m_actuators.append(m_actuator);
+        QFeedbackActuator *actuator = createFeedbackActuator(this, 1);
+        m_actuators.append(actuator);
 
 #ifdef USING_QTFEEDBACK
         m_profile = new Profile(this);
@@ -168,8 +167,6 @@ QFeedbackFFMemless::~QFeedbackFFMemless()
 {
     if (m_vibraSpiDevice != -1)
         close(m_vibraSpiDevice);
-    delete m_stateChangeTimer;
-    delete m_actuator;
 }
 
 void QFeedbackFFMemless::initialiseConstants()
