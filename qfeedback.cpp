@@ -47,6 +47,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #ifndef USING_QTFEEDBACK
 Q_EXPORT_PLUGIN2(feedback_ffmemless, QFeedbackFFMemless)
