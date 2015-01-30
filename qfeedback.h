@@ -119,6 +119,7 @@ private:
     // theme effects
     struct input_event m_themeEffectPlayEvent;
     struct ff_effect m_themeEffect;
+    struct ff_effect m_periodicThemeEffect;
 
     // custom effects
     struct ff_effect m_customHapticEffect;
@@ -136,6 +137,7 @@ private:
     bool m_supportsPeriodic;
     bool m_themeEffectsPossible;
     bool m_customEffectsPossible;
+    bool m_periodicThemeEffectsPossible;
     bool m_initialising;
 
     // custom effect constants, read from settings file if exists.
@@ -159,6 +161,11 @@ private:
     quint16 KEYPAD_PRESS_DELAY;
     quint16 KEYPAD_PRESS_MAX;
     quint16 KEYPAD_PRESS_MIN;
+    quint16 KEYPAD_USE_PERIODIC;
+    quint16 KEYPAD_PERIODIC_ATTACK_TIME;
+    quint16 KEYPAD_PERIODIC_FADE_TIME;
+    quint16 KEYPAD_PERIODIC_ATTACK_LEVEL;
+    quint16 KEYPAD_PERIODIC_FADE_LEVEL;
 };
 
 
