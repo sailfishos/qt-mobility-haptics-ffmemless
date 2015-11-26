@@ -453,6 +453,11 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
 
     // use Q_LIKELY to optimise for VKB key presses
     if (Q_LIKELY(effect == QFeedbackEffect::ThemeBasicKeypad && m_periodicThemeEffectsPossible)) {
+#ifdef USING_QTFEEDBACK
+        if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0)) {
+            return false;
+        }
+#endif
         m_themeEffectPlayEvent.code = m_periodicThemeEffect.id;
         return writeEffectEvent(&m_themeEffectPlayEvent);
     }
