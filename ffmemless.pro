@@ -24,4 +24,4 @@ INSTALLS += plugindescription
 # also enable profile detection. libprofile-qt5 is a bit broken, work around it here.
 QT += dbus
 QMAKE_CXXFLAGS += -I/usr/include/profile-qt5
-QMAKE_LFLAGS += -lprofile-qt5
+LIBS += -lprofile-qt5
