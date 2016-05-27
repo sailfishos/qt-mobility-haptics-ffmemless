@@ -15,22 +15,13 @@ settings.path = $$[QT_INSTALL_PLUGINS]/feedback/
 target.path = $$[QT_INSTALL_PLUGINS]/feedback
 INSTALLS += target settings
 
-equals(QT_MAJOR_VERSION, 4) {
-    INCLUDEPATH += . $$[MOBILITY_INCLUDE]
-    DEPENDPATH += . $$[MOBILITY_INCLUDE]
-    CONFIG += mobility
-    MOBILITY = feedback
-}
-equals(QT_MAJOR_VERSION, 5) {
-    DEFINES *= USING_QTFEEDBACK
-    OTHER_FILES += ffmemless.json
-    QT += feedback
-    plugindescription.files = ffmemless.json
-    plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
-    INSTALLS += plugindescription
+OTHER_FILES += ffmemless.json
+QT += feedback
+plugindescription.files = ffmemless.json
+plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
+INSTALLS += plugindescription
 
-    # also enable profile detection. libprofile-qt5 is a bit broken, work around it here.
-    QT += dbus
-    QMAKE_CXXFLAGS += -I/usr/include/profile-qt5
-    QMAKE_LFLAGS += -lprofile-qt5
-}
+# also enable profile detection. libprofile-qt5 is a bit broken, work around it here.
+QT += dbus
+QMAKE_CXXFLAGS += -I/usr/include/profile-qt5
+QMAKE_LFLAGS += -lprofile-qt5

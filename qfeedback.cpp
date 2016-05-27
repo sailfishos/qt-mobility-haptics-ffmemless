@@ -49,10 +49,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#ifndef USING_QTFEEDBACK
-Q_EXPORT_PLUGIN2(feedback_ffmemless, QFeedbackFFMemless)
-#endif
-
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define OFF(x)  ((x)%BITS_PER_LONG)
 #define BIT(x)  (1UL<<OFF(x))
@@ -101,11 +97,9 @@ int vibra_evdev_file_search(bool *supportsRumble, bool *supportsPeriodic)
 
 
 QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
-#ifdef USING_QTFEEDBACK
     m_profile(0),
     m_profileEnablesVibra(false),
     m_profileTouchscreenVibraLevel(0),
-#endif
     m_stateChangeTimer(0),
     m_vibraSpiDevice(-1),
     m_actuatorEnabled(false),
@@ -149,7 +143,6 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
         QFeedbackActuator *actuator = createFeedbackActuator(this, 1);
         m_actuators.append(actuator);
 
-#ifdef USING_QTFEEDBACK
         m_profile = new Profile(this);
         connect(m_profile, SIGNAL(activeProfileChanged(QString)),
                 this, SLOT(deviceProfileSettingsChanged()));
@@ -158,17 +151,14 @@ QFeedbackFFMemless::QFeedbackFFMemless(QObject *parent) : QObject(parent),
         connect(m_profile, SIGNAL(touchscreenVibrationLevelChanged(QString, int)),
                 this, SLOT(deviceProfileSettingsChanged()));
         deviceProfileSettingsChanged();
-#endif
     }
 }
 
-#ifdef USING_QTFEEDBACK
 void QFeedbackFFMemless::deviceProfileSettingsChanged()
 {
     m_profileEnablesVibra = m_profile->isVibrationEnabled(m_profile->activeProfile());
     m_profileTouchscreenVibraLevel = m_profile->touchscreenVibrationLevel(m_profile->activeProfile());
 }
-#endif
 
 QFeedbackFFMemless::~QFeedbackFFMemless()
 {
@@ -443,21 +433,14 @@ QFeedbackInterface::PluginPriority QFeedbackFFMemless::pluginPriority()
 
 bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
 {
-#ifdef USING_QTFEEDBACK // use Q_UNLIKELY for performance
     if (Q_UNLIKELY(!m_themeEffectsPossible || !m_profileEnablesVibra))
         return false;
-#else
-    if (!m_themeEffectsPossible)
-        return false;
-#endif
 
     // use Q_LIKELY to optimise for VKB key presses
     if (Q_LIKELY(effect == QFeedbackEffect::ThemeBasicKeypad && m_periodicThemeEffectsPossible)) {
-#ifdef USING_QTFEEDBACK
         if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0)) {
             return false;
         }
-#endif
         m_themeEffectPlayEvent.code = m_periodicThemeEffect.id;
         return writeEffectEvent(&m_themeEffectPlayEvent);
     }
@@ -473,10 +456,9 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
         break;
         case QFeedbackEffect::ThemeBasicKeypad:
         {
-#ifdef USING_QTFEEDBACK
             if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0))
                 return false;
-#endif
+
             m_themeEffect.u.rumble.strong_magnitude = KEYPAD_PRESS_MAX;
             m_themeEffect.u.rumble.weak_magnitude = KEYPAD_PRESS_MIN;
             m_themeEffect.replay.length = KEYPAD_PRESS_DURATION;
@@ -484,12 +466,10 @@ bool QFeedbackFFMemless::play(QFeedbackEffect::ThemeEffect effect)
         }
         break;
         case QFeedbackEffect::ThemeBasicButton: // BasicButton is the default.
-#ifdef USING_QTFEEDBACK
         {
             if (Q_UNLIKELY(m_profileTouchscreenVibraLevel == 0))
                 return false;
         }
-#endif
         default:
         {
             m_themeEffect.u.rumble.strong_magnitude = BUTTON_PRESS_MAX;
@@ -642,11 +622,9 @@ void QFeedbackFFMemless::restartCustomEffect(QFeedbackHapticsEffect *effect)
     // write stop.
     stopCustomEffect(effect);
 
-#ifdef USING_QTFEEDBACK
     // check to see if we should play.
     if (Q_UNLIKELY(!m_profileEnablesVibra))
         return;
-#endif
 
     // reupload the (possibly updated) effect.
     int whichEffect = reuploadUpdatedEffect(effect);
