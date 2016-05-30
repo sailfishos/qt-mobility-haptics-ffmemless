@@ -40,12 +40,8 @@
 #ifndef QFEEDBACK_FFMEMLESS_H
 #define QFEEDBACK_FFMEMLESS_H
 
-#ifdef USING_QTFEEDBACK
 #include <profile.h>
 #include <QtPlugin>
-#else
-#include <qmobilityglobal.h>
-#endif
 
 #include <qfeedbackplugininterfaces.h>
 #include <linux/input.h>
@@ -54,27 +50,19 @@
 
 QT_BEGIN_HEADER
 
-#ifdef USING_QTFEEDBACK
 QT_USE_NAMESPACE
 #define ThemeEffect Effect
 #define ThemeBasicKeypad PressWeak
 #define ThemeBasicButton Press
 #define ThemeLongPress PressStrong
-#else
-QTM_USE_NAMESPACE
-#endif
 
 class QFeedbackFFMemless : public QObject, public QFeedbackHapticsInterface, public QFeedbackThemeInterface
 {
     Q_OBJECT
-#ifdef USING_QTFEEDBACK
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtFeedbackPlugin" FILE "ffmemless.json")
     Q_INTERFACES(QFeedbackHapticsInterface)
     Q_INTERFACES(QFeedbackThemeInterface)
-#else
-    Q_INTERFACES(QTM_NAMESPACE::QFeedbackHapticsInterface)
-    Q_INTERFACES(QTM_NAMESPACE::QFeedbackThemeInterface)
-#endif
+
 public:
     QFeedbackFFMemless(QObject *parent = 0);
     ~QFeedbackFFMemless();
@@ -96,9 +84,7 @@ public:
 
 private Q_SLOTS:
     void stateChangeTimerTriggered();
-#ifdef USING_QTFEEDBACK
     void deviceProfileSettingsChanged();
-#endif
 
 private:
     void stopCustomEffect(QFeedbackHapticsEffect *effect);
@@ -110,12 +96,11 @@ private:
     bool writeEffectEvent(struct input_event *event);
 
 private:
-#ifdef USING_QTFEEDBACK
     // profile change detection (normal / silent / airplane etc)
     Profile *m_profile;
     bool m_profileEnablesVibra;
     int m_profileTouchscreenVibraLevel;
-#endif
+
     // theme effects
     struct input_event m_themeEffectPlayEvent;
     struct ff_effect m_themeEffect;
