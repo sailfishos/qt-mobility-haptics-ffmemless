@@ -2,9 +2,8 @@ Name: qt5-feedback-haptics-ffmemless
 Version: 0.2.5
 Release: 1
 Summary: Plugin which provides haptic feedback via ffmemless ioctl
-Group: System/Plugins
 License: LGPLv2+
-URL: https://github.com/nemomobile/qt-mobility-haptics-ffmemless
+URL: https://git.sailfishos.org/mer-core/qt-mobility-haptics-ffmemless
 Source0: %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
