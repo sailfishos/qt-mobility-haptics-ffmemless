@@ -48,7 +48,6 @@
 #include <QElapsedTimer>
 #include <QTimer>
 
-QT_BEGIN_HEADER
 
 QT_USE_NAMESPACE
 #define ThemeEffect Effect
@@ -153,7 +152,5 @@ private:
     quint16 KEYPAD_PERIODIC_FADE_LEVEL;
 };
 
-
-QT_END_HEADER
 
 #endif

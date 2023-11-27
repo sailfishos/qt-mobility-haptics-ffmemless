@@ -1,0 +1,5 @@
+.qmake.stash
+Makefile
+libqtfeedback_ffmemless.so*
+moc_*
+*.o

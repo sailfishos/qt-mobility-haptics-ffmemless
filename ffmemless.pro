@@ -21,7 +21,7 @@ plugindescription.files = ffmemless.json
 plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
 INSTALLS += plugindescription
 
-# also enable profile detection. libprofile-qt5 is a bit broken, work around it here.
+# also enable profile detection. libprofile-qt$${QT_MAJOR_VERSION} is a bit broken, work around it here.
 QT += dbus
-QMAKE_CXXFLAGS += -I/usr/include/profile-qt5
-LIBS += -lprofile-qt5
+QMAKE_CXXFLAGS += -I/usr/include/profile-qt$${QT_MAJOR_VERSION}
+LIBS += -lprofile-qt$${QT_MAJOR_VERSION}
