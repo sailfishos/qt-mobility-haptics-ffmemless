@@ -1,7 +1,2 @@
-This repository contains a Qt Mobility plugin for the QtFeedback module
-or a Qt5 QtFeedback plugin, depending on whether it's built with Qt4
-with Mobility support or Qt5 with QtFeedback support.
-
+This repository contains a Qt5 QtFeedback plugin.
 The plugin provides haptic feedback effects via ff-memless ioctl.
-
-The current maintainer is: Chris Adams (chris.adams@jollamobile.com)
