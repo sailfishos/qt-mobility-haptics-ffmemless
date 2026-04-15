@@ -1,8 +1,10 @@
 TEMPLATE = lib
-CONFIG += qt plugin hide_symbols
+CONFIG += qt plugin hide_symbols link_pkgconfig
 QT = core
 TARGET = $$qtLibraryTarget(qtfeedback_ffmemless)
 PLUGIN_TYPE=feedback
+
+PKGCONFIG += Qt$${QT_MAJOR_VERSION}Feedback
 
 HEADERS += qfeedback.h
 SOURCES += qfeedback.cpp
@@ -16,7 +18,7 @@ target.path = $$[QT_INSTALL_PLUGINS]/feedback
 INSTALLS += target settings
 
 OTHER_FILES += ffmemless.json
-QT += feedback
+
 plugindescription.files = ffmemless.json
 plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
 INSTALLS += plugindescription

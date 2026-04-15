@@ -7,7 +7,7 @@ URL: https://github.com/sailfishos/qt-mobility-haptics-ffmemless
 Source0: %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)
-BuildRequires:  pkgconfig(Qt0Feedback)
+BuildRequires:  pkgconfig(Qt5Feedback)
 BuildRequires:  libprofile-qt5-devel
 
 %description
